@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' https://fonts.googleapis.com;
+    font-src https://fonts.gstatic.com;
+    connect-src 'self' https://script.google.com;
+    img-src 'self' data:;
+    frame-ancestors 'none';
+  ">
   <title>Dashboard Financiero - Junta Administrativa Liceo Del Sur</title>
   <!-- Google Fonts - Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -170,30 +180,9 @@
       </div>
     </main>
 
-    <!-- Configuration Modal (optional, to update API URL easily) -->
     <footer class="main-footer">
       <p>© 2026 Junta Administrativa Liceo Del Sur. Todos los derechos reservados.</p>
-      <button class="btn-config" id="btn-config-api">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Configurar API
-      </button>
     </footer>
-  </div>
-
-  <!-- Config API Modal -->
-  <div class="modal-overlay" id="modal-config">
-    <div class="modal-card">
-      <h3>Configurar Conexión con Google Sheets</h3>
-      <p class="modal-description">Pega la URL de la Aplicación Web obtenida al desplegar tu Google Apps Script.</p>
-      <div class="input-group">
-        <label for="input-api-url">URL de Apps Script</label>
-        <input type="text" id="input-api-url" placeholder="https://script.google.com/macros/s/.../exec">
-      </div>
-      <div class="modal-buttons">
-        <button class="btn btn-secondary" id="btn-modal-close">Cancelar</button>
-        <button class="btn btn-primary" id="btn-modal-save">Guardar Conexión</button>
-      </div>
-    </div>
   </div>
 
   <!-- Custom Scripts -->

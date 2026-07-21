@@ -1,12 +1,23 @@
 /**
  * app.js - Logic and Data Integration for Liceo Del Sur Financial Dashboard
+ * Published at: https://ciberp62.github.io/dashboard-junta/
  */
 
 // Default Apps Script API Web App URL
 const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwFEtOnz4ILSpWrT73Lkme0NrWQGS08LiozXkopOzANWoBDLmNmBu5vmRA67uw1FXewhg/exec";
 
-// Local storage key
-const STORAGE_KEY = "liceo_del_sur_api_url";
+// Security: Token for API validation (must match the DASHBOARD_TOKEN constant in Apps Script)
+const API_TOKEN = "JLS2026-SECURE-K7XQ";
+
+// Allowed origin for validation on the client side
+const ALLOWED_ORIGIN = "https://ciberp62.github.io";
+
+// Sanitize text to avoid XSS in dynamic DOM insertions
+function sanitize(str) {
+  const div = document.createElement("div");
+  div.textContent = String(str || "");
+  return div.innerHTML;
+}
 
 // Source of Financing Mapping Configuration
 const CODE_SOURCE_MAP = {
@@ -63,42 +74,14 @@ const tableSourcesBody = document.querySelector("#table-sources tbody");
 const tableSubpartidasBody = document.querySelector("#table-subpartidas tbody");
 const searchSubpartidas = document.getElementById("search-subpartidas");
 
-const btnConfigApi = document.getElementById("btn-config-api");
-const modalConfig = document.getElementById("modal-config");
-const btnModalClose = document.getElementById("btn-modal-close");
-const btnModalSave = document.getElementById("btn-modal-save");
-const inputApiUrl = document.getElementById("input-api-url");
-
 const sourcePeriodBadge = document.getElementById("source-period-badge");
 
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
-  // Setup API URL in input
-  const currentUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
-  inputApiUrl.value = currentUrl;
-  
   // Event Listeners
   selectYear.addEventListener("change", processAndRender);
   selectMonth.addEventListener("change", processAndRender);
   searchSubpartidas.addEventListener("input", processAndRender);
-  
-  // Modal listeners
-  btnConfigApi.addEventListener("click", () => {
-    modalConfig.classList.add("active");
-  });
-  
-  btnModalClose.addEventListener("click", () => {
-    modalConfig.classList.remove("active");
-  });
-  
-  btnModalSave.addEventListener("click", () => {
-    const newUrl = inputApiUrl.value.trim();
-    if (newUrl) {
-      localStorage.setItem(STORAGE_KEY, newUrl);
-      modalConfig.classList.remove("active");
-      fetchData();
-    }
-  });
 
   // First fetch
   fetchData();
@@ -107,10 +90,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // Fetch Data from Apps Script
 async function fetchData() {
   setLoadingState(true);
-  const apiUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
+  const apiUrl = DEFAULT_API_URL;
   
   try {
-    const response = await fetch(apiUrl);
+    // Append security token to every request
+    const secureUrl = `${apiUrl}?token=${encodeURIComponent(API_TOKEN)}`;
+    const response = await fetch(secureUrl, { mode: "cors" });
     if (!response.ok) throw new Error("Respuesta de API incorrecta");
     const data = await response.json();
     
@@ -266,10 +251,10 @@ function processAndRender() {
       
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td><strong>${sourceName}</strong></td>
-        <td class="text-right">${formatColones(group.presupuesto)}</td>
-        <td class="text-right">${formatColones(group.ejecutado)}</td>
-        <td class="text-right"><span style="font-weight:600; color: ${pct > 100 ? 'var(--red-primary)' : 'var(--text-primary)'}">${pct.toFixed(1)}%</span></td>
+        <td><strong>${sanitize(sourceName)}</strong></td>
+        <td class="text-right">${sanitize(formatColones(group.presupuesto))}</td>
+        <td class="text-right">${sanitize(formatColones(group.ejecutado))}</td>
+        <td class="text-right"><span style="font-weight:600; color: ${pct > 100 ? 'var(--red-primary)' : 'var(--text-primary)'}">${sanitize(pct.toFixed(1))}%</span></td>
       `;
       tableSourcesBody.appendChild(tr);
 
@@ -307,12 +292,12 @@ function processAndRender() {
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><code>${item.codigo}</code></td>
-      <td>${item.subpartida}</td>
-      <td class="text-right">${formatColones(item.presupuesto)}</td>
-      <td class="text-right">${formatColones(item.ejecutado)}</td>
-      <td class="text-right" style="font-weight: 600;">${item.porcentaje.toFixed(1)}%</td>
-      <td><span class="badge-status ${statusClass}">${statusText}</span></td>
+      <td><code>${sanitize(item.codigo)}</code></td>
+      <td>${sanitize(item.subpartida)}</td>
+      <td class="text-right">${sanitize(formatColones(item.presupuesto))}</td>
+      <td class="text-right">${sanitize(formatColones(item.ejecutado))}</td>
+      <td class="text-right" style="font-weight: 600;">${sanitize(item.porcentaje.toFixed(1))}%</td>
+      <td><span class="badge-status ${sanitize(statusClass)}">${sanitize(statusText)}</span></td>
     `;
     tableSubpartidasBody.appendChild(tr);
   });
